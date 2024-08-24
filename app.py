@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
 from pydantic import BaseModel, ValidationError
 import trafilatura
-from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 class Article(BaseModel):
     url: str
@@ -15,13 +16,22 @@ def root():
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    if request.method == 'OPTIONS':
+        return '', 204  # Return 204 No Content for OPTIONS requests
     try:
         data = request.get_json()
         article = Article(**data)
-        main_content = trafilatura.extract(article.content)
-        return jsonify({"content": main_content})
+        prediction = handle_predict(article.content)
+        return jsonify({"content": prediction})
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
+
+def handle_predict(content):
+    main_content = trafilatura.extract(content)
+    if len(main_content) > 100:
+        return 1
+    else:
+        return 0
 
 if __name__ == "__main__":
     app.run(debug=True)
