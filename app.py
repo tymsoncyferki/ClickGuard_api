@@ -1,22 +1,27 @@
-import uvicorn
-from fastapi import FastAPI
-from pydantic import BaseModel
+from flask import Flask, request, jsonify
+from pydantic import BaseModel, ValidationError
 import trafilatura
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
 
 class Article(BaseModel):
     url: str
     content: str
 
-app = FastAPI()
+@app.route("/", methods=["GET"])
+def root():
+    return jsonify({"message": "Hello World"})
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@app.post("/predict")
-async def predict(article: Article):
-    main_content = trafilatura.extract(article.content)
-    return {"content": main_content}
+@app.route("/predict", methods=["POST"])
+def predict():
+    try:
+        data = request.get_json()
+        article = Article(**data)
+        main_content = trafilatura.extract(article.content)
+        return jsonify({"content": main_content})
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    app.run(debug=True)
