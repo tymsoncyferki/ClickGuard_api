@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pydantic import BaseModel, ValidationError
-import trafilatura
 from flask_cors import CORS
+
+from service import handle_predict, handle_extract
 
 app = Flask(__name__)
 CORS(app)
@@ -12,7 +13,7 @@ class Article(BaseModel):
 
 @app.route("/", methods=["GET"])
 def root():
-    return jsonify({"message": "Hello World"})
+    return render_template("root.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -26,12 +27,18 @@ def predict():
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
 
-def handle_predict(content):
-    main_content = trafilatura.extract(content)
-    if len(main_content) > 100:
-        return 1
-    else:
-        return 0
+@app.route("/extract", methods=["POST"])
+def extract():
+    if request.method == 'OPTIONS':
+        return '', 204
+    try:
+        data = request.get_json()
+        article = Article(**data)
+        extracted_text = handle_extract(article.content)
+        return jsonify({"content": extracted_text})
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+
 
 if __name__ == "__main__":
     app.run(debug=True)
