@@ -2,7 +2,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f4;
+    background-color: #e7e7e7;
 }
 header {
     text-align: center;
@@ -34,7 +34,7 @@ h1 {
     margin: 10px 0;
 }
 pre {
-    background-color: #f1f1f1;
+    background-color: #e7e7e7;
     padding: 10px;
     border-radius: 5px;
     overflow-x: auto;
