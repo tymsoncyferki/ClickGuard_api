@@ -17,7 +17,9 @@ def extract_title(html_content):
 
 def predict(title, content):
     # some ML model
-    if len(title) * 5 > len(content):
+    print(f"Title: {title}")
+    print(f"Content: {content}")
+    if len(title) * 15 > len(content):
         return 1
     else:
         return 0
