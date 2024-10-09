@@ -3,9 +3,9 @@ from flask import Flask
 from app import app
 import json
 
-class FlaskAppTestCase(unittest.TestCase):
+class TestEndpoints(unittest.TestCase):
     def setUp(self):
-        # Create a test client using the Flask application configured for testing
+        # Set up flask test client
         self.app = app.test_client()
         self.app.testing = True
 
