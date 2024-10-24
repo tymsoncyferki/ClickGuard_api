@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from pydantic import ValidationError
 from flask_cors import CORS
 
-from service import handle_predict, handle_extract, handle_extract_and_predict
+from service import handle_predict, handle_extract, handle_extract_and_predict, handle_google_detection
 from models import Article, HTMLPayload, PredictionResponse
 
 app = Flask(__name__)
@@ -44,6 +44,18 @@ def extract_and_predict():
         data = request.get_json()
         html_payload = HTMLPayload(**data)
         prediction = handle_extract_and_predict(html_payload)
+        return jsonify(prediction.model_dump())
+    except ValidationError as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route("/google_detect", methods=["POST"])
+def detect():
+    if request.method == 'OPTIONS':
+        return '', 204
+    try:
+        data = request.get_json()
+        html_payload = HTMLPayload(**data)
+        prediction = handle_google_detection(html_payload)
         return jsonify(prediction.model_dump())
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400

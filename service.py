@@ -1,7 +1,7 @@
 import trafilatura
 from bs4 import BeautifulSoup
 
-from models import HTMLPayload, Article, PredictionResponse
+from models import HTMLPayload, Article, PredictionResponse, DetectionResponse
 
 def extract_content(html_content):
     main_content = trafilatura.extract(html_content)
@@ -39,3 +39,23 @@ def handle_extract_and_predict(payload: HTMLPayload):
     prediction_response = handle_predict(payload=article)
     return prediction_response
 
+def title_predict(title):
+    # some ML model
+    if len(title) < 35:
+        return 1
+    else:
+        return 0
+
+def handle_google_detection(payload: HTMLPayload):
+    html_content = payload.html
+    soup = BeautifulSoup(html_content, 'html.parser')
+    predictions = {}
+    for result in soup.find_all('div', {'class': 'MjjYud'}):
+        titles = result.find_all('h3')
+        if len(titles) > 0:
+            title = titles[0].text
+            first_anchor = result.find('a')
+            if first_anchor is not None:
+                first_link = first_anchor.get('href')
+                predictions[first_link] = title_predict(title)
+    return DetectionResponse(predictions=predictions)

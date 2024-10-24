@@ -10,3 +10,6 @@ class Article(BaseModel):
 
 class PredictionResponse(BaseModel):
     prediction: int
+
+class DetectionResponse(BaseModel):
+    predictions: dict
