@@ -5,6 +5,8 @@ from models import HTMLPayload, Article, PredictionResponse, DetectionResponse
 
 def extract_content(html_content):
     main_content = trafilatura.extract(html_content)
+    if main_content is None:
+        main_content = ""
     return main_content
 
 def extract_title(html_content):
@@ -51,11 +53,11 @@ def handle_google_detection(payload: HTMLPayload):
     soup = BeautifulSoup(html_content, 'html.parser')
     predictions = {}
     for result in soup.find_all('div', {'class': 'MjjYud'}):
-        titles = result.find_all('h3')
-        if len(titles) > 0:
-            title = titles[0].text
-            first_anchor = result.find('a')
-            if first_anchor is not None:
-                first_link = first_anchor.get('href')
-                predictions[first_link] = title_predict(title)
+        anchors = result.find_all('a')
+        for anchor in anchors:
+            title_tag = anchor.find('h3')
+            if title_tag is not None:
+                title = title_tag.text
+                link = anchor.get('href')
+                predictions[link] = title_predict(title)
     return DetectionResponse(predictions=predictions)
