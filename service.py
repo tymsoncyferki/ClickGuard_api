@@ -1,5 +1,6 @@
 import trafilatura
 from bs4 import BeautifulSoup
+import random
 
 from models import HTMLPayload, Article, PredictionResponse, DetectionResponse
 
@@ -22,9 +23,22 @@ def predict(title, content):
     print(f"Title: {title}")
     print(f"Content: {content}")
     if len(title) * 15 > len(content):
-        return 1
+        return random.uniform(0.5, 1)
     else:
-        return 0
+        return random.uniform(0, 0.5)
+
+def explain(title, content):
+    if len(title) * 15 > len(content):
+        return "article content is long and detailed"
+    else:
+        return "article content is super short"
+
+def spoil(title, content):
+    one_word = random.choice(title.split())
+    words = content.split()
+    k = min(5, len(words))
+    chosen_words = random.choices(words, k=k)
+    return " ".join([one_word] + chosen_words)
 
 def handle_extract(payload: HTMLPayload):
     html_content = payload.html
@@ -33,8 +47,11 @@ def handle_extract(payload: HTMLPayload):
     return Article(title=title, content=main_content)
 
 def handle_predict(payload: Article):
-    prediction = predict(payload.title, payload.content)
-    return PredictionResponse(prediction=prediction)
+    probability = predict(payload.title, payload.content)
+    prediction = 1 if probability > 0.5 else 0
+    explanation = explain(payload.title, payload.content)
+    spoiler = spoil(payload.title, payload.content)
+    return PredictionResponse(prediction=prediction, probability=round(probability, 2), explanation=explanation, spoiler=spoiler)
 
 def handle_extract_and_predict(payload: HTMLPayload):
     article = handle_extract(payload)

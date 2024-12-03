@@ -10,6 +10,9 @@ class Article(BaseModel):
 
 class PredictionResponse(BaseModel):
     prediction: int
+    probability: float
+    explanation: str
+    spoiler: str
 
 class DetectionResponse(BaseModel):
     predictions: dict
