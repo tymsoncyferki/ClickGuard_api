@@ -1,8 +1,9 @@
 import trafilatura
 from bs4 import BeautifulSoup
 import random
+import re
 
-from models import HTMLPayload, Article, PredictionResponse, DetectionResponse
+from models import HTMLPayload, Article, PredictionResponse, DetectionResponse, ConfName, CONF_MAPPER
 
 def extract_content(html_content):
     main_content = trafilatura.extract(html_content)
@@ -29,9 +30,9 @@ def predict(title, content):
 
 def explain(title, content):
     if len(title) * 15 > len(content):
-        return "article content is long and detailed"
-    else:
         return "article content is super short"
+    else:
+        return "article content is long and detailed"
 
 def spoil(title, content):
     one_word = random.choice(title.split())
@@ -65,8 +66,20 @@ def title_predict(title):
     else:
         return 0
 
-def handle_google_detection(payload: HTMLPayload):
-    html_content = payload.html
+
+def matches_pattern(pattern, string):
+    escaped_pattern = re.escape(pattern)
+    escaped_pattern = escaped_pattern.replace(r'\*', '.*')
+    regex_pattern = f'^{escaped_pattern}$'
+    return bool(re.match(regex_pattern, string))
+
+def get_configuration_name(url: str) -> ConfName:
+    for key, value in CONF_MAPPER.items():
+        if matches_pattern(key, url):
+            return value
+    return ConfName.UNKNOWN
+
+def handle_google_detection(html_content: str) -> DetectionResponse:
     soup = BeautifulSoup(html_content, 'html.parser')
     predictions = {}
     for result in soup.find_all('div', {'class': 'MjjYud'}):
@@ -78,3 +91,23 @@ def handle_google_detection(payload: HTMLPayload):
                 link = anchor.get('href')
                 predictions[link] = title_predict(title)
     return DetectionResponse(predictions=predictions)
+
+def handle_thesun_detection(html_content: str) -> DetectionResponse:
+    soup = BeautifulSoup(html_content, 'html.parser')
+    predictions = {}
+    for result in soup.find_all('div', {'class': 'sun-grid-container'}):
+        anchors = result.find_all('a')
+        for anchor in anchors:
+            if anchor.has_attr('data-headline'):
+                title = anchor.get('data-headline')
+                link = anchor.get('href')
+                predictions[link] = title_predict(title)
+    return DetectionResponse(predictions=predictions)
+
+def handle_predetection(payload: HTMLPayload) -> DetectionResponse:
+    conf_name = get_configuration_name(payload.url)
+    if conf_name == ConfName.GOOGLE:
+        return handle_google_detection(payload.html)
+    elif conf_name == ConfName.THESUN:
+        return handle_thesun_detection(payload.html)
+    return DetectionResponse(predictions={})

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from enum import Enum
 
 class HTMLPayload(BaseModel):
     url: str
@@ -16,3 +17,13 @@ class PredictionResponse(BaseModel):
 
 class DetectionResponse(BaseModel):
     predictions: dict
+
+class ConfName(Enum):
+    GOOGLE = 'google'
+    THESUN = 'thesun'
+    UNKNOWN = 'unknown'
+
+CONF_MAPPER = {
+    '*google.com/search?*': ConfName.GOOGLE,
+    '*thesun.co.uk/*/': ConfName.THESUN
+}
