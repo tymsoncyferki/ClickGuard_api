@@ -3,7 +3,7 @@ from pydantic import ValidationError
 from flask_cors import CORS
 
 from service import handle_predict, handle_extract, handle_extract_and_predict, handle_predetection
-from models import Article, HTMLPayload, PredictionResponse
+from models import Article, HTMLPayload
 
 app = Flask(__name__)
 CORS(app)

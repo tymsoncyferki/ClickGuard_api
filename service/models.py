@@ -22,8 +22,3 @@ class ConfName(Enum):
     GOOGLE = 'google'
     THESUN = 'thesun'
     UNKNOWN = 'unknown'
-
-CONF_MAPPER = {
-    '*google.com/search?*': ConfName.GOOGLE,
-    '*thesun.co.uk/*/': ConfName.THESUN
-}
