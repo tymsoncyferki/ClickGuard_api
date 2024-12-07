@@ -1,7 +1,7 @@
 import re
 
-from service.config import CONF_MAPPER
-from service.models import ConfName
+from config import CONF_MAPPER
+from models import ConfName
 
 
 def matches_pattern(pattern, string):

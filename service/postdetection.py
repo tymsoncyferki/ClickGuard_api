@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import random
 
 from models import HTMLPayload, Article, PredictionResponse
+from measure import explain_baitness
 
 # extraction 
 
@@ -29,11 +30,8 @@ def predict(title, content):
     else:
         return random.uniform(0, 0.5)
 
-def explain(title, content):
-    if len(title) * 15 > len(content):
-        return "article content is super short"
-    else:
-        return "article content is long and detailed"
+def explain(title, content, probability):
+    return explain_baitness(title, probability)
 
 def spoil(title, content):
     one_word = random.choice(title.split())
@@ -53,7 +51,7 @@ def handle_extract(payload: HTMLPayload):
 def handle_predict(payload: Article):
     probability = predict(payload.title, payload.content)
     prediction = 1 if probability > 0.5 else 0
-    explanation = explain(payload.title, payload.content)
+    explanation = explain(payload.title, payload.content, probability)
     spoiler = spoil(payload.title, payload.content)
     return PredictionResponse(prediction=prediction, probability=round(probability, 2), explanation=explanation, spoiler=spoiler)
 
