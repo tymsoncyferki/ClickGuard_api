@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify, render_template
 from pydantic import ValidationError
 from flask_cors import CORS
 
-from postdetection import handle_predict, handle_extract, handle_extract_and_predict
-from predetection import handle_predetection
-from models import Article, HTMLPayload
+from .postdetection import handle_predict, handle_extract, handle_extract_and_predict
+from .predetection import handle_predetection
+from .dtos import Article, HTMLPayload
 
 app = Flask(__name__)
 CORS(app)

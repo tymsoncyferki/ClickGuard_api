@@ -1,6 +1,6 @@
 import unittest
 from flask import Flask
-from app import app
+from ..app import app
 import json
 
 class TestEndpoints(unittest.TestCase):
@@ -43,29 +43,31 @@ class TestEndpoints(unittest.TestCase):
         self.assertEqual(json.loads(response.data)['prediction'], 1) # with current model
     
     def test_google_detect(self):
-        # Test the /google_detect endpoint
+        # Test the /predetect endpoint on google example
         with open("test_files/test_google.html", 'rb') as file:
             html = file.read()
         payload = {
             "url": "https://www.google.com/search?q=queryselector+google+search+results&sca_esv=381a7a3a6a330f3",
             "html": str(html)
         }
-        response = self.app.post('/google_detect', json=payload)
+        response = self.app.post('/predetect', json=payload)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"predictions", response.data)
+        print(json.loads(response.data))
 
     def test_google_detect_2(self):
-        # Test the /google_detect endpoint
+        # Test the /predetect endpoint on google example
         with open("test_files/trump_google.html", 'rb') as file:
             html = file.read()
         payload = {
             "url": "https://www.google.com/search?q=queryselector+google+search+results&sca_esv=381a7a3a6a330f3",
             "html": str(html)
         }
-        response = self.app.post('/google_detect', json=payload)
+        response = self.app.post('/predetect', json=payload)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"predictions", response.data)
         self.assertEqual(len(json.loads(response.data)['predictions']), 9)
+        print(json.loads(response.data))
         
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@ import trafilatura
 from bs4 import BeautifulSoup
 import random
 
-from models import HTMLPayload, Article, PredictionResponse
-from measure import explain_baitness
+from .dtos import HTMLPayload, Article, PredictionResponse
+from .measure import explain_baitness
 
 # extraction 
 
@@ -23,8 +23,6 @@ def extract_title(html_content):
 
 def predict(title, content):
     # some ML model
-    print(f"Title: {title}")
-    print(f"Content: {content}")
     if len(title) * 15 > len(content):
         return random.uniform(0.5, 1)
     else:

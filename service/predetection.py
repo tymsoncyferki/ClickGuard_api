@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
-from models import HTMLPayload, DetectionResponse, ConfName
-from utils import get_configuration_name
+from .dtos import HTMLPayload, DetectionResponse, ConfName
+from .utils import get_configuration_name
 
 def title_predict(title):
     # some ML model

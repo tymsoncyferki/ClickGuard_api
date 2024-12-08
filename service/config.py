@@ -1,5 +1,8 @@
-from models import ConfName
+from .dtos import ConfName
 
+class Config:
+
+    OPEN_API_KEY = ""
 
 CONF_MAPPER = {
     '*google.com*': ConfName.GOOGLE,
