@@ -50,13 +50,13 @@ def extract_and_predict():
         return jsonify({"error": str(e)}), 400
     
 @app.route("/predetect", methods=["POST"])
-def detect():
+async def detect():
     if request.method == 'OPTIONS':
         return '', 204
     try:
         data = request.get_json()
         html_payload = HTMLPayload(**data)
-        prediction = handle_predetection(html_payload)
+        prediction = await handle_predetection(html_payload)
         return jsonify(prediction.model_dump())
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400

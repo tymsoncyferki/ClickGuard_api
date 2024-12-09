@@ -80,6 +80,10 @@ BAIT_PHRASES = [
 
 """ helper functions """
 
+def words_count(text):
+    """ calculates number of words """
+    return len(text.split())
+
 def remove_punctuation(text):
     """ removes punctuation """
     return text.translate(str.maketrans('', '', string.punctuation))
@@ -104,6 +108,15 @@ def capital_letters_ratio(text):
     """ calculates capital letters ratio """
     text = remove_punctuation(text)
     return sum([char.isupper() for char in list(text)]) / len(text)
+
+def capital_words_count(text):
+    """ calculates capital words """
+    return sum([1 for word in word_tokenize(text) if word.isupper() and len(word) > 1])
+
+def nonclickbait_punctuation_count(text):
+    """ counts non-clickbait related punctuation """
+    punctuation = "$%&,.;:-/"
+    return sum([1 for x in text if x in punctuation])
 
 def clickbait_punctuation_count(text):
     """ counts clickbait related punctuation, only left brackets as otherwise they would be double calculated """
@@ -175,41 +188,79 @@ def flesch_reading_ease_score(text):
 
 
 def cut_value(value):
+    """ cuts value to (0,1) range """
     if value > 1:
         return 1
     elif value < 0:
         return 0
     return value
 
-def baitness_measure(text, debug=False):
+def calculate_metrics(text):
+    """ calculates all metrics specified in METRICS_FUNCTIONS variable """
+    metrics = {}
+    for name, function in METRICS_FUNCTIONS.items():
+        metrics[name] = function(text)
+    baitness = baitness_measure(text, metrics_dict=metrics)
+    metrics['baitness'] = baitness
+    return metrics
 
-    # eye catchingness
-    punct_count = clickbait_punctuation_count(text)
-    capitals_ratio = capital_letters_ratio(text) * 3
-    number_count = numbers_count(text)
+def baitness_measure(text, debug=False, metrics_dict=None):
+    """ calculates baitness measure """
+    if metrics_dict is not None:
+        # Eye-catchingness
+        punct_count = metrics_dict["bait_punct"]
+        capitals_ratio = metrics_dict["capitals_ratio"] * 3
+        number_count = metrics_dict["numbers"]
 
+        # Content curiosity
+        pronouns_2_count = metrics_dict["2nd_pronouns"]
+        super_count = metrics_dict["superlatives"] * 2
+        spec_count = metrics_dict["speculatives"]
+        bait_words = metrics_dict["bait_words"]
+
+        # Sentiment - measures high polarity and high subjectivity
+        polarity = abs(metrics_dict["polarity"])
+        subjectivity = metrics_dict["subjectivity"]
+
+        # Difficulty of reading - reading ease score and common words ratio
+        fres = cut_value(metrics_dict["fres"] / 100)
+        cw_ratio = cut_value(metrics_dict["cw_percentage"] * 1.5)
+    else:
+        # eye catchingness
+        punct_count = clickbait_punctuation_count(text)
+        capitals_ratio = capital_letters_ratio(text) * 3
+        number_count = numbers_count(text)
+        
+        # content curiosity
+        pronouns_2_count = pronouns_2nd_person_count(text)
+        super_count = superlatives_ratio(text) * 2
+        spec_count = speculatives_count(text)
+        bait_words = baiting_words_count(text)
+        
+        # sentiment - measures high polarity and high subjectivity
+        polarity = abs(polarity_score(text))
+        subjectivity = subjectivity_score(text)
+
+        # difficulty of reading - reading ease score and common words ratio
+        fres = cut_value(flesch_reading_ease_score(text) / 100)
+        cw_ratio = cut_value(common_words_ratio(text) * 1.5)
+
+    # eye catch
     eye_catch_list = [punct_count, capitals_ratio, number_count]
     eye_catch = cut_value(np.mean(eye_catch_list))
     if debug:
         print(eye_catch_list)
     
     # content curiosity
-    pronouns_2_count = pronouns_2nd_person_count(text)
-    super_count = superlatives_ratio(text) * 2
-    spec_count = speculatives_count(text)
-    bait_words = baiting_words_count(text)
-
     curiosity_list = [pronouns_2_count, super_count, spec_count, bait_words]
     curiosity = np.sqrt(cut_value(np.mean(curiosity_list)))
     if debug:
         print(curiosity_list)
 
     # sentiment - measures high polarity and high subjectivity
-    sentiment = math.sqrt(abs(polarity_score(text)) * subjectivity_score(text))
+    sentiment = math.sqrt(polarity * subjectivity)
 
     # difficulty of reading - reading ease score and common words ratio
-    fres = cut_value(flesch_reading_ease_score(text) / 100)
-    cw_ratio = cut_value(common_words_ratio(text) * 1.5)
     ease_of_text = np.mean([fres, cw_ratio])
 
     metric_list = [eye_catch, sentiment, ease_of_text, curiosity]
@@ -219,25 +270,46 @@ def baitness_measure(text, debug=False):
     
     return measure
 
-def explain_baitness(text, probability):
-    # eye catchingness
-    punct_count = clickbait_punctuation_count(text)
-    capitals_ratio = capital_letters_ratio(text) * 3
-    number_count = numbers_count(text)
-    
-    # content curiosity
-    pronouns_2_count = pronouns_2nd_person_count(text)
-    super_count = superlatives_ratio(text) * 2
-    spec_count = speculatives_count(text)
-    bait_words = baiting_words_count(text)
-    
-    # sentiment - measures high polarity and high subjectivity
-    polarity = abs(polarity_score(text))
-    subjectivity = subjectivity_score(text)
+def explain_baitness(text, probability, metrics_dict = None):
+    """ generates explanation for the prediction """
+    if metrics_dict is not None:
+        # Eye-catchingness
+        punct_count = metrics_dict["bait_punct"]
+        capitals_ratio = metrics_dict["capitals_ratio"] * 3
+        number_count = metrics_dict["numbers"]
 
-    # difficulty of reading - reading ease score and common words ratio
-    fres = cut_value(flesch_reading_ease_score(text) / 100)
-    cw_ratio = cut_value(common_words_ratio(text) * 1.5)
+        # Content curiosity
+        pronouns_2_count = metrics_dict["2nd_pronouns"]
+        super_count = metrics_dict["superlatives"] * 2
+        spec_count = metrics_dict["speculatives"]
+        bait_words = metrics_dict["bait_words"]
+
+        # Sentiment - measures high polarity and high subjectivity
+        polarity = abs(metrics_dict["polarity"])
+        subjectivity = metrics_dict["subjectivity"]
+
+        # Difficulty of reading - reading ease score and common words ratio
+        fres = cut_value(metrics_dict["fres"] / 100)
+        cw_ratio = cut_value(metrics_dict["cw_percentage"] * 1.5)
+    else:
+        # eye catchingness
+        punct_count = clickbait_punctuation_count(text)
+        capitals_ratio = capital_letters_ratio(text) * 3
+        number_count = numbers_count(text)
+        
+        # content curiosity
+        pronouns_2_count = pronouns_2nd_person_count(text)
+        super_count = superlatives_ratio(text) * 2
+        spec_count = speculatives_count(text)
+        bait_words = baiting_words_count(text)
+        
+        # sentiment - measures high polarity and high subjectivity
+        polarity = abs(polarity_score(text))
+        subjectivity = subjectivity_score(text)
+
+        # difficulty of reading - reading ease score and common words ratio
+        fres = cut_value(flesch_reading_ease_score(text) / 100)
+        cw_ratio = cut_value(common_words_ratio(text) * 1.5)
 
     primary_metrics = {
         "2nd person pronouns": pronouns_2_count,
@@ -269,7 +341,7 @@ def explain_baitness(text, probability):
         "reading ease": "is very easy to read"
     }
 
-    print(np.sqrt(baitness_measure(text)))
+    # print(np.sqrt(baitness_measure(text)))
     if probability > 0.6:
         top_contributors = sorted_metrics[:2]
         explanation = ", ".join([explanations[metric] for metric, _ in top_contributors])
@@ -279,3 +351,24 @@ def explain_baitness(text, probability):
         explanation = "no grounds to classify as a clickbait"
     
     return explanation
+
+METRICS_FUNCTIONS = {
+    "n_words": words_count,
+    "cw_percentage": common_words_ratio,
+    "capitals_ratio": capital_letters_ratio,
+    "capitals_count":capital_words_count,
+    "bait_punct": clickbait_punctuation_count,
+    "nonbait_punct": nonclickbait_punctuation_count,
+    "numbers": numbers_count,
+    "2nd_pronouns": pronouns_2nd_person_count,
+    "superlatives": superlatives_ratio,
+    "speculatives": speculatives_count,
+    "bait_words": baiting_words_count,
+    "polarity": polarity_score,
+    "subjectivity": subjectivity_score,
+    "fres": flesch_reading_ease_score
+}
+
+def get_baitness_scaled(title):
+    """ baitness scaled to typical probability range - optimal cutoff changed from 0.3 to ~0.5 """
+    return np.sqrt(baitness_measure(title))

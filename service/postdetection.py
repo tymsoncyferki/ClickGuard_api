@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup
 import random
 
 from .dtos import HTMLPayload, Article, PredictionResponse
-from .measure import explain_baitness
+from .measure import explain_baitness, calculate_metrics
+from .model import get_probability_of_clickbait_title
 
 # extraction 
 
@@ -21,15 +22,16 @@ def extract_title(html_content):
         title = h1_tag.get_text()
     return title
 
-def predict(title, content):
+def predict(title, content, metrics_dict=None):
     # some ML model
-    if len(title) * 15 > len(content):
-        return random.uniform(0.5, 1)
-    else:
-        return random.uniform(0, 0.5)
+    # if len(title) * 15 > len(content):
+    #     return random.uniform(0.5, 1)
+    # else:
+    #     return random.uniform(0, 0.5)
+    return get_probability_of_clickbait_title(title, metrics_dict=metrics_dict)
 
-def explain(title, content, probability):
-    return explain_baitness(title, probability)
+def explain(title, content, probability, metrics_dict=None):
+    return explain_baitness(title, probability, metrics_dict=metrics_dict)
 
 def spoil(title, content):
     one_word = random.choice(title.split())
@@ -47,9 +49,10 @@ def handle_extract(payload: HTMLPayload):
     return Article(title=title, content=main_content)
 
 def handle_predict(payload: Article):
-    probability = predict(payload.title, payload.content)
+    metrics_dict = calculate_metrics(payload.title)
+    probability = predict(payload.title, payload.content, metrics_dict=metrics_dict)
     prediction = 1 if probability > 0.5 else 0
-    explanation = explain(payload.title, payload.content, probability)
+    explanation = explain(payload.title, payload.content, probability, metrics_dict=metrics_dict)
     spoiler = spoil(payload.title, payload.content)
     return PredictionResponse(prediction=prediction, probability=round(probability, 2), explanation=explanation, spoiler=spoiler)
 
