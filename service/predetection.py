@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from .dtos import HTMLPayload, DetectionResponse, ConfName
 from .utils import get_configuration_name
 from .measure import get_baitness_scaled
-from .async_model import process_request
+from .async_prediction import process_request
 
 # def titles_predict(titles):
 #     def get_prediction(probability):

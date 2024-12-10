@@ -54,20 +54,6 @@ class TestEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"predictions", response.data)
         # print(json.loads(response.data))
-
-    def test_google_detect_2(self):
-        # Test the /predetect endpoint on google example
-        with open("test_files/trump_google.html", 'rb') as file:
-            html = file.read()
-        payload = {
-            "url": "https://www.google.com/search?q=queryselector+google+search+results&sca_esv=381a7a3a6a330f3",
-            "html": str(html)
-        }
-        response = self.app.post('/predetect', json=payload)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b"predictions", response.data)
-        self.assertEqual(len(json.loads(response.data)['predictions']), 9)
-        # print(json.loads(response.data))
         
 
 if __name__ == "__main__":

@@ -6,7 +6,16 @@ from .config import Config
 from .measure import calculate_metrics
 from .config import MODEL
 
-async def fetch_embedding(session, title):
+async def fetch_embedding(session, title: str) -> list | None:
+    """
+    sends async request to OpenAI embeddings endpoint
+
+    Args:
+        prompt (str): input text for generating embeddings
+
+    Returns:
+        dict: response from API
+    """
     url = "https://api.openai.com/v1/embeddings"
     headers = {
         "Content-Type": "application/json",
@@ -31,14 +40,32 @@ async def fetch_embedding(session, title):
         return None
 
 
-async def get_embeddings(titles):
+async def get_embeddings(titles: list[str]) -> list:
+    """
+    fetches embeddings for a list of titles asynchronously
+
+    Args:
+        titles (list[str]): list of titles
+
+    Returns:
+        list: list of embeddings or None for titles that failed
+    """
     async with aiohttp.ClientSession() as session:
         tasks = [fetch_embedding(session, title) for title in titles]
         embeddings = await asyncio.gather(*tasks)
         return embeddings
     
 
-async def process_request(titles_dict: dict):
+async def process_request(titles_dict: dict) -> dict:
+    """
+    generates clickbait predictions
+
+    Args:
+        titles_dict (dict): dictionary where keys are links and values are titles
+
+    Returns:
+        dict[str, int]: a dictionary where keys are links and values are predictions (1 for clickbait, 0 otherwise)
+    """
     predictions = {}
     embeddings = await get_embeddings(titles_dict.values())
     for link, title, emb in zip(list(titles_dict.keys()), list(titles_dict.values()), embeddings):

@@ -80,23 +80,15 @@ BAIT_PHRASES = [
 
 """ helper functions """
 
-def words_count(text):
-    """ calculates number of words """
-    return len(text.split())
-
 def remove_punctuation(text):
     """ removes punctuation """
     return text.translate(str.maketrans('', '', string.punctuation))
 
-def preprocess_text(text):
-    """ preprocess data for embedding model training """
-    if isinstance(text, list):
-        text = ' '.join(text)
-    text = text.lower()
-    text = re.sub(r"[^a-zA-Z\s]", "", text)
-    tokens = text.split()
-    tokens = [word for word in tokens if word not in STOP_WORDS]
-    return tokens
+""" measures """
+
+def words_count(text):
+    """ calculates number of words """
+    return len(text.split())
 
 def common_words_ratio(text):
     """ percentage of stop words in text """
