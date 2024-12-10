@@ -1,4 +1,4 @@
-from openai import OpenAI
+# from openai import OpenAI
 import pickle
 import requests
 
@@ -25,7 +25,7 @@ def return_embeddings_chat(prompt):
     try:
         returned_data = res["data"]
     except ValueError as e:
-        returned_data = send_request["data"]
+        returned_data = send_request(prompt)["data"]
     return returned_data[0]["embedding"]
 
 

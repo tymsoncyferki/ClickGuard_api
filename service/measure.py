@@ -80,6 +80,13 @@ BAIT_PHRASES = [
 
 """ helper functions """
 
+def is_numeric(s):
+    """ returns true if at most one character in the string is non-numeric and all others are numeric """
+    non_numeric_count = sum(1 for char in s if not char.isdigit())
+    if non_numeric_count == len(s):
+        return False
+    return non_numeric_count <= 1
+
 def words_count(text):
     """ calculates number of words """
     return len(text.split())
@@ -126,7 +133,7 @@ def clickbait_punctuation_count(text):
 def numbers_count(text):
     """ calculates the count of numbers (not digits)"""
     text = remove_punctuation(text)
-    return sum([x.isnumeric() for x in word_tokenize(text)])
+    return sum([is_numeric(x) for x in word_tokenize(text)])
 
 def pronouns_2nd_person_count(text):
     """ 2nd person pronouns usage """
