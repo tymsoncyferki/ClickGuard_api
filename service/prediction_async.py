@@ -74,5 +74,6 @@ async def predict_titles_async(titles_dict: dict) -> dict:
         for _, value in metrics_dict.items():
             emb.append(value)
         prob = MODEL.predict_proba([emb])[0][1]
-        predictions[link] = 1 if prob > 0.5 else 0
+        # predictions[link] = 1 if prob > 0.5 else 0
+        predictions[link] = float(prob)
     return predictions

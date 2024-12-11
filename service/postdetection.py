@@ -114,6 +114,8 @@ def handle_predict(payload: Article, generate_spoiler=True) -> PredictionRespons
     Returns:
         PredictionResponse: response containing the prediction, probability, explanation, and spoiler
     """
+    if len(payload.title) == 0:
+        return PredictionResponse(prediction=0, probability=0, explanation="no article title on this page", spoiler="")
     metrics_dict = calculate_metrics(payload.title)
     probability = predict(payload.title, payload.content, metrics_dict=metrics_dict)
     prediction = 1 if probability > 0.5 else 0

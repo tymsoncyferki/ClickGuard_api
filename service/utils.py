@@ -22,7 +22,6 @@ def matches_pattern(pattern: str, string: str) -> bool:
         escaped_pattern = ".*" + escaped_pattern
     else:
         escaped_pattern = re.escape(pattern).replace(r'\*', '.*')
-    print(escaped_pattern)
     regex_pattern = f'^{escaped_pattern}$'
     return bool(re.match(regex_pattern, string))
 

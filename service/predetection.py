@@ -27,7 +27,8 @@ async def handle_thesun_detection(html_content: str) -> DetectionResponse:
             if anchor.has_attr('data-headline'):
                 title = anchor.get('data-headline')
                 link = anchor.get('href')
-                titles[link] = title
+                if len(title) > 0:
+                    titles[link] = title
     # predictions = titles_predict(titles)
     predictions = await predict_titles_async(titles)
     return DetectionResponse(predictions=predictions)
