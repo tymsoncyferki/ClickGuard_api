@@ -2,13 +2,7 @@ from bs4 import BeautifulSoup
 
 from .dtos import HTMLPayload, DetectionResponse, ConfName
 from .utils import get_configuration_name
-from .measure import get_baitness_scaled
-from .async_prediction import process_request
-
-# def titles_predict(titles):
-#     def get_prediction(probability):
-#         return 1 if probability > 0.5 else 0
-#     return {link: get_prediction(get_baitness_scaled(title)) for link, title in titles.items()}
+from .prediction_async import predict_titles_async
 
 async def handle_google_detection(html_content: str) -> DetectionResponse:
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -21,9 +15,7 @@ async def handle_google_detection(html_content: str) -> DetectionResponse:
                 title = title_tag.text
                 link = anchor.get('href')
                 titles[link] = title
-                # predictions[link] = title_predict(title)
-    # predictions = titles_predict(titles)
-    predictions = await process_request(titles)
+    predictions = await predict_titles_async(titles)
     return DetectionResponse(predictions=predictions)
 
 async def handle_thesun_detection(html_content: str) -> DetectionResponse:
@@ -37,7 +29,7 @@ async def handle_thesun_detection(html_content: str) -> DetectionResponse:
                 link = anchor.get('href')
                 titles[link] = title
     # predictions = titles_predict(titles)
-    predictions = await process_request(titles)
+    predictions = await predict_titles_async(titles)
     return DetectionResponse(predictions=predictions)
 
 async def handle_predetection(payload: HTMLPayload) -> DetectionResponse:

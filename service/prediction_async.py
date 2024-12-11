@@ -55,8 +55,9 @@ async def get_embeddings(titles: list[str]) -> list:
         embeddings = await asyncio.gather(*tasks)
         return embeddings
     
+import time
 
-async def process_request(titles_dict: dict) -> dict:
+async def predict_titles_async(titles_dict: dict) -> dict:
     """
     generates clickbait predictions
 

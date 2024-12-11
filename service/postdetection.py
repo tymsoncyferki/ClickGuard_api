@@ -5,6 +5,7 @@ import random
 from .dtos import HTMLPayload, Article, PredictionResponse
 from .measure import explain_baitness, calculate_metrics
 from .prediction import get_probability_of_clickbait_title
+from .spoiling import get_spoiler
 
 # extraction 
 
@@ -83,11 +84,8 @@ def spoil(title: str, content: str, prediction: int) -> str:
     """
     if prediction == 0:
         return ""
-    one_word = random.choice(title.split())
-    words = content.split()
-    k = min(5, len(words))
-    chosen_words = random.choices(words, k=k)
-    return " ".join([one_word] + chosen_words)
+    spoiler = get_spoiler(title, content)
+    return spoiler
 
 # functions to be imported into api
 
@@ -106,7 +104,7 @@ def handle_extract(payload: HTMLPayload) -> Article:
     main_content = extract_content(html_content)
     return Article(title=title, content=main_content)
 
-def handle_predict(payload: Article) -> PredictionResponse:
+def handle_predict(payload: Article, generate_spoiler=True) -> PredictionResponse:
     """
     makes a clickbait prediction for the given article
 
@@ -120,10 +118,13 @@ def handle_predict(payload: Article) -> PredictionResponse:
     probability = predict(payload.title, payload.content, metrics_dict=metrics_dict)
     prediction = 1 if probability > 0.5 else 0
     explanation = explain(payload.title, payload.content, probability, metrics_dict=metrics_dict)
-    spoiler = spoil(payload.title, payload.content, prediction=prediction)
+    if generate_spoiler:
+        spoiler = spoil(payload.title, payload.content, prediction=prediction)
+    else:
+        spoiler = ""
     return PredictionResponse(prediction=prediction, probability=round(probability, 2), explanation=explanation, spoiler=spoiler)
 
-def handle_extract_and_predict(payload: HTMLPayload):
+def handle_extract_and_predict(payload: HTMLPayload, generate_spoiler=True) -> PredictionResponse:
     """
     extracts title and main content and makes a prediction
 
@@ -134,5 +135,5 @@ def handle_extract_and_predict(payload: HTMLPayload):
         PredictionResponse: response containing the prediction, probability, explanation, and spoiler
     """
     article = handle_extract(payload)
-    prediction_response = handle_predict(payload=article)
+    prediction_response = handle_predict(payload=article, generate_spoiler=generate_spoiler)
     return prediction_response

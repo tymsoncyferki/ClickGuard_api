@@ -321,7 +321,7 @@ def explain_baitness(text, probability, metrics_dict = None):
         "polarity": polarity,
         "subjectivity": subjectivity,
         "common words": cw_ratio / 1.5,
-        "reading ease": fres
+        "reading ease": fres ** 3
     }
 
     sorted_metrics = sorted(primary_metrics.items(), key=lambda x: x[1], reverse=True)

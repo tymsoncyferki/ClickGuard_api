@@ -1,7 +1,7 @@
 import unittest
 
 from ..prediction import get_probability_of_clickbait_title, return_embeddings_chat
-from ..async_prediction import get_embeddings, process_request
+from ..prediction_async import get_embeddings, predict_titles_async
 
 class TestPredictionMethods(unittest.TestCase):
 
@@ -21,7 +21,7 @@ class TestAsyncPredictionMethods(unittest.TestCase):
         self.assertEqual(len(embs[0]), 1000)
 
     async def test_predictions(self):
-        predictions = await process_request({"fb/s.pl41241": "sample title", "anotherlink.pl": "watch this man"})
+        predictions = await predict_titles_async({"fb/s.pl41241": "sample title", "anotherlink.pl": "watch this man"})
         self.assertEqual(len(predictions.keys()), 2)
         self.assertIn(predictions["anotherlink.pl"], [0,1])
 
