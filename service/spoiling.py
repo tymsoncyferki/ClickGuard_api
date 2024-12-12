@@ -35,7 +35,9 @@ def get_spoiling_api_response(title, article_text, model="gpt-4o-mini"):
         Output{{\
             "spoiler": 'Its a lucky charm to him'\
         }}\
-        The response should be as short as possible, more of a phrase rather than sophisticated sentence. However, it should not be just a rephrase of the title. It should satisfy the curiosity created by the clickbait title.
+        The response should be as short as possible, more of a phrase rather than sophisticated sentence.
+        However, it should not be just a rephrase of the title or a summary whats the text about.
+        It should satisfy the curiosity created by the clickbait title and create a 'spoiler' of the content.
         Pay attention to return valid JSON format!\
         """
 

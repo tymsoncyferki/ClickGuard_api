@@ -22,7 +22,7 @@ def extract():
         html_payload = HTMLPayload(**data)
         article = handle_extract(html_payload)
         return jsonify(article.model_dump())
-    except ValidationError as e:
+    except (ValidationError, Exception) as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route("/predict", methods=["POST"])
@@ -34,7 +34,7 @@ def predict():
         article = Article(**data)
         prediction = handle_predict(article)
         return jsonify(prediction.model_dump())
-    except ValidationError as e:
+    except (ValidationError, Exception) as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route("/extract_and_predict", methods=["POST"])
@@ -46,7 +46,7 @@ def extract_and_predict():
         html_payload = HTMLPayload(**data)
         prediction = handle_extract_and_predict(html_payload)
         return jsonify(prediction.model_dump())
-    except ValidationError as e:
+    except (ValidationError, Exception) as e:
         return jsonify({"error": str(e)}), 400
     
 @app.route("/predetect", methods=["POST"])
@@ -58,7 +58,7 @@ async def detect():
         html_payload = HTMLPayload(**data)
         prediction = await handle_predetection(html_payload)
         return jsonify(prediction.model_dump())
-    except ValidationError as e:
+    except (ValidationError, Exception) as e:
         return jsonify({"error": str(e)}), 400
 
 
