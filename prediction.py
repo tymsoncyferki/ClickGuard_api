@@ -1,7 +1,7 @@
 from typing import Any
 
 import requests
-import logging
+from openai import OpenAI
 
 from config import Config, MODEL
 from measure import calculate_metrics
@@ -16,16 +16,12 @@ def send_request(prompt: str) -> dict:
     Returns:
         dict: response from API
     """
-    res = requests.post(f"https://api.openai.com/v1/embeddings",
-        headers = {
-          "Content-Type": "application/json",
-          "Authorization": f"Bearer {Config.OPEN_API_KEY}"
-        },
-        json={
-          "model": "text-embedding-3-large",
-          "dimensions": 1000,
-          "input": f"{prompt}"
-        }).json()
+    client = OpenAI(api_key=Config.OPEN_API_KEY)
+    res = client.embeddings.create(
+        input="prompt",
+        model="text-embedding-3-large",
+        dimensions=1000
+    )
     return res
 
 def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
@@ -38,16 +34,16 @@ def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
     Returns:
         list: embedding vector
     """
-    res = send_request(prompt)
-
+    
     attempt = 0
     while attempt < max_retries:
         try:
-            returned_data = res["data"]
-            return returned_data[0]["embedding"]
-        except KeyError as e:
+            res = send_request(prompt)
+            returned_data = res.data
+            return returned_data[0].embedding
+        except Exception as e:
             if attempt == max_retries - 1:
-                raise ValueError(f"There is a problem with a request to OpenAI: status {res.status_code} {e} : {res.text}")
+                raise ValueError(f"There is a problem with a request to OpenAI: {e}, {res} ")
             attempt += 1
     return []
 
