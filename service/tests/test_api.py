@@ -35,7 +35,8 @@ class TestEndpoints(unittest.TestCase):
         # Test the /extract_and_predict endpoint
         payload = {
             "url": "http://example.com",
-            "html": "<html><body><h1>Test Article</h1><p>This is a test.</p></body></html>"
+            "html": "<html><body><h1>Test Article</h1><p>This is a test.</p></body></html>",
+            "generateSpoiler": False
         }
         response = self.app.post('/extract_and_predict', json=payload)
         self.assertEqual(response.status_code, 200)

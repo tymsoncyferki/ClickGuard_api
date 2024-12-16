@@ -44,7 +44,11 @@ def extract_and_predict():
     try:
         data = request.get_json()
         html_payload = HTMLPayload(**data)
-        prediction = handle_extract_and_predict(html_payload)
+        try:
+            generate_spoiler = data["generateSpoiler"]
+        except KeyError:
+            generate_spoiler = True
+        prediction = handle_extract_and_predict(html_payload, generate_spoiler=generate_spoiler)
         return jsonify(prediction.model_dump())
     except (ValidationError, Exception) as e:
         return jsonify({"error": str(e)}), 400

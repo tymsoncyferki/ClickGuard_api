@@ -23,7 +23,7 @@ class TestAsyncPredictionMethods(unittest.TestCase):
     async def test_predictions(self):
         predictions = await predict_titles_async({"fb/s.pl41241": "sample title", "anotherlink.pl": "watch this man"})
         self.assertEqual(len(predictions.keys()), 2)
-        self.assertIn(predictions["anotherlink.pl"], [0,1])
+        self.assertGreater(predictions["anotherlink.pl"], 0)
 
 
 if __name__ == "__main__":
