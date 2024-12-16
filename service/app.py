@@ -6,6 +6,8 @@ from .postdetection import handle_predict, handle_extract, handle_extract_and_pr
 from .predetection import handle_predetection
 from .dtos import Article, HTMLPayload
 
+import os
+
 app = Flask(__name__)
 CORS(app)
 
@@ -67,4 +69,4 @@ async def detect():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
