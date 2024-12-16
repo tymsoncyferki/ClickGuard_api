@@ -34,7 +34,7 @@ def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
     Returns:
         list: embedding vector
     """
-    
+    res = "default blank response"
     attempt = 0
     while attempt < max_retries:
         try:
@@ -43,7 +43,7 @@ def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
             return returned_data[0].embedding
         except Exception as e:
             if attempt == max_retries - 1:
-                raise ValueError(f"There is a problem with a request to OpenAI: {e}, {res} ")
+                raise ValueError(f"There is a problem with a request to OpenAI: {e}, {res}")
             attempt += 1
     return []
 
