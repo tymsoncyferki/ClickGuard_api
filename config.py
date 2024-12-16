@@ -2,6 +2,7 @@ from dtos import ConfName
 from dotenv import load_dotenv
 import os
 import pickle
+import logging
 
 load_dotenv()
 
@@ -16,3 +17,7 @@ CONF_MAPPER = {
 
 with open(Config.MODEL_PATH, 'rb') as rf_file:
     MODEL = pickle.load(rf_file)
+
+logging.basicConfig()
+LOGGER = logging.getLogger("clickguard")
+LOGGER.setLevel(logging.DEBUG)

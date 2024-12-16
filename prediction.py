@@ -1,6 +1,5 @@
 from typing import Any
 
-import requests
 from openai import OpenAI
 
 from config import Config, MODEL
