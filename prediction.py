@@ -1,6 +1,7 @@
 from typing import Any
 
 import requests
+import logging
 
 from config import Config, MODEL
 from measure import calculate_metrics
@@ -27,7 +28,7 @@ def send_request(prompt: str) -> dict:
         }).json()
     return res
 
-def return_embeddings_chat(prompt: str) -> list:
+def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
     """
     gets OpenAI embeddings for a given text prompt
 
@@ -38,11 +39,17 @@ def return_embeddings_chat(prompt: str) -> list:
         list: embedding vector
     """
     res = send_request(prompt)
-    try:
-        returned_data = res["data"]
-    except ValueError as e:
-        returned_data = send_request(prompt)["data"]
-    return returned_data[0]["embedding"]
+
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            returned_data = res["data"]
+            return returned_data[0]["embedding"]
+        except KeyError as e:
+            if attempt == max_retries - 1:
+                raise ValueError(f"There is a problem with a request to OpenAI: status {res.status_code} {e} : {res.text}")
+            attempt += 1
+    return []
 
 
 def get_probability_of_clickbait_title(title: str, metrics_dict: dict | None = None, model: Any = MODEL):
