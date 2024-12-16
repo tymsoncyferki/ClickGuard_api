@@ -7,7 +7,7 @@ load_dotenv()
 
 class Config:
     OPEN_API_KEY = os.getenv("OPEN_API_KEY")
-    MODEL_PATH = os.path.join(os.getcwd(), "service/models/XGB_1000_dimensions_and_informativeness_measures.pkl")
+    MODEL_PATH = os.path.join(os.getcwd(), "models/XGB_1000_dimensions_and_informativeness_measures.pkl")
 
 CONF_MAPPER = {
     '*google.com*': ConfName.GOOGLE,
