@@ -1,10 +1,9 @@
 import asyncio
 import aiohttp
 
-import numpy as np
-from .config import Config
-from .measure import calculate_metrics
-from .config import MODEL
+from config import Config
+from measure import calculate_metrics
+from config import MODEL
 
 async def fetch_embedding(session, title: str) -> list | None:
     """

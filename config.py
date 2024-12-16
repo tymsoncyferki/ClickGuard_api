@@ -1,4 +1,4 @@
-from .dtos import ConfName
+from dtos import ConfName
 from dotenv import load_dotenv
 import os
 import pickle

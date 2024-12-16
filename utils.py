@@ -1,7 +1,7 @@
 import re
 
-from .config import CONF_MAPPER
-from .dtos import ConfName
+from config import CONF_MAPPER
+from dtos import ConfName
 
 
 def matches_pattern(pattern: str, string: str) -> bool:

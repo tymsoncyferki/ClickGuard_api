@@ -6,7 +6,6 @@ from nltk.corpus import stopwords
 import textstat
 
 import math
-import re
 
 from textblob import TextBlob
 

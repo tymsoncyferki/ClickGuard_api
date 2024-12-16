@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 
-from .dtos import HTMLPayload, DetectionResponse, ConfName
-from .utils import get_configuration_name
-from .prediction_async import predict_titles_async
+from dtos import HTMLPayload, DetectionResponse, ConfName
+from utils import get_configuration_name
+from prediction_async import predict_titles_async
 
 async def handle_google_detection(html_content: str) -> DetectionResponse:
     soup = BeautifulSoup(html_content, 'html.parser')

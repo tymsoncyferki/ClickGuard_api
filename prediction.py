@@ -1,11 +1,9 @@
 from typing import Any
 
-from openai import OpenAI
-import pickle
 import requests
 
-from .config import Config, MODEL
-from .measure import calculate_metrics
+from config import Config, MODEL
+from measure import calculate_metrics
 
 def send_request(prompt: str) -> dict:
     """

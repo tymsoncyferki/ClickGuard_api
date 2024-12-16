@@ -1,11 +1,10 @@
 import trafilatura
 from bs4 import BeautifulSoup
-import random
 
-from .dtos import HTMLPayload, Article, PredictionResponse
-from .measure import explain_baitness, calculate_metrics
-from .prediction import get_probability_of_clickbait_title
-from .spoiling import get_spoiler
+from dtos import HTMLPayload, Article, PredictionResponse
+from measure import explain_baitness, calculate_metrics
+from prediction import get_probability_of_clickbait_title
+from spoiling import get_spoiler
 
 # extraction 
 

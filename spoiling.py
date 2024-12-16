@@ -1,9 +1,7 @@
-import os
 from openai import OpenAI
-from dotenv import load_dotenv
 import json
 
-from .config import Config
+from config import Config
 
 def get_spoiling_api_response(title, article_text, model="gpt-4o-mini"):
     client = OpenAI(api_key=Config.OPEN_API_KEY)
