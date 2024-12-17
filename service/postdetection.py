@@ -1,6 +1,5 @@
 import trafilatura
 from bs4 import BeautifulSoup
-import random
 
 from .dtos import HTMLPayload, Article, PredictionResponse
 from .measure import explain_baitness, calculate_metrics

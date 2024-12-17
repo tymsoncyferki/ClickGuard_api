@@ -1,13 +1,11 @@
 from typing import Any
 
 from openai import OpenAI
-import pickle
-import requests
 
-from .config import Config, MODEL
+from .config import Config, MODEL, logger
 from .measure import calculate_metrics
 
-def send_request(prompt: str) -> dict:
+def send_request(prompt: str):
     """
     sends request to OpenAI embeddings endpoint
 
@@ -17,19 +15,15 @@ def send_request(prompt: str) -> dict:
     Returns:
         dict: response from API
     """
-    res = requests.post(f"https://api.openai.com/v1/embeddings",
-        headers = {
-          "Content-Type": "application/json",
-          "Authorization": f"Bearer {Config.OPEN_API_KEY}"
-        },
-        json={
-          "model": "text-embedding-3-large",
-          "dimensions": 1000,
-          "input": f"{prompt}"
-        }).json()
+    client = OpenAI(api_key=Config.OPEN_API_KEY)
+    res = client.embeddings.create(
+        input="prompt",
+        model="text-embedding-3-large",
+        dimensions=1000
+    )
     return res
 
-def return_embeddings_chat(prompt: str) -> list:
+def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
     """
     gets OpenAI embeddings for a given text prompt
 
@@ -39,12 +33,20 @@ def return_embeddings_chat(prompt: str) -> list:
     Returns:
         list: embedding vector
     """
-    res = send_request(prompt)
-    try:
-        returned_data = res["data"]
-    except ValueError as e:
-        returned_data = send_request(prompt)["data"]
-    return returned_data[0]["embedding"]
+    res = "default blank response"
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            res = send_request(prompt)
+            returned_data = res.data
+            logger.info("Request to OpenAI was successfull")
+            return returned_data[0].embedding
+        except Exception as e:
+            if attempt == max_retries - 1:
+                logger.error(f"There is a problem with a request to OpenAI: {e}, {res}, aborting prediction")
+                raise ValueError(f"There is a problem with connection to OpenAi Embeddings API")
+            attempt += 1
+    return []
 
 
 def get_probability_of_clickbait_title(title: str, metrics_dict: dict | None = None, model: Any = MODEL):

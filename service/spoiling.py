@@ -1,9 +1,7 @@
-import os
 from openai import OpenAI
-from dotenv import load_dotenv
 import json
 
-from .config import Config
+from .config import Config, logger
 
 def get_spoiling_api_response(title, article_text, model="gpt-4o-mini"):
     client = OpenAI(api_key=Config.OPEN_API_KEY)
@@ -55,6 +53,7 @@ def get_spoiling_api_response(title, article_text, model="gpt-4o-mini"):
         prediction_json = json.loads(response.choices[0].message.content)
         return prediction_json
     except Exception as e:
+        logger.error(f"There was a problem fetching response from OpenAI API: {e}, setting spoiler to empty string")
         return {"spoiler": ""}    
     
 
@@ -62,7 +61,8 @@ def get_spoiler(title, article_text):
     response = get_spoiling_api_response(title, article_text)
     try:
         spoiler = response['spoiler']
-    except KeyError:
+    except Exception as e:
+        logger.error(f"Could not extract spoiler from the response: {e}, setting spoiler to empty string")
         spoiler = ""
     return spoiler
     

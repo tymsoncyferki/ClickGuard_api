@@ -1,20 +1,12 @@
 import string 
 import numpy as np
-import nltk
 from nltk import pos_tag, word_tokenize
-from nltk.corpus import stopwords
 import textstat
 
 import math
-import re
 
 from textblob import TextBlob
-
-nltk.download('stopwords')
-nltk.download('punkt_tab')
-nltk.download('averaged_perceptron_tagger_eng')
-
-STOP_WORDS = stopwords.words("english")
+from .config import STOP_WORDS
 
 BAIT_PHRASES = [
  'obsessed',

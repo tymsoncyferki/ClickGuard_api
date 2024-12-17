@@ -19,6 +19,7 @@ def extract():
         return '', 204
     try:
         data = request.get_json()
+        app.logger.info(f"Received request for /extract endpoint with payload {data}")
         html_payload = HTMLPayload(**data)
         article = handle_extract(html_payload)
         return jsonify(article.model_dump())
@@ -31,6 +32,7 @@ def predict():
         return '', 204  # Return 204 No Content for OPTIONS requests
     try:
         data = request.get_json()
+        app.logger.info(f"Received request for /predict endpoint with payload {data}")
         article = Article(**data)
         prediction = handle_predict(article)
         return jsonify(prediction.model_dump())
@@ -43,6 +45,7 @@ def extract_and_predict():
         return '', 204
     try:
         data = request.get_json()
+        app.logger.info(f"Received request for /extract_and_predict endpoint with payload {data}")
         html_payload = HTMLPayload(**data)
         try:
             generate_spoiler = data["generateSpoiler"]
@@ -59,6 +62,7 @@ async def detect():
         return '', 204
     try:
         data = request.get_json()
+        app.logger.info(f"Received request for /predetect endpoint with payload {data}")
         html_payload = HTMLPayload(**data)
         prediction = await handle_predetection(html_payload)
         return jsonify(prediction.model_dump())
@@ -67,4 +71,4 @@ async def detect():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
