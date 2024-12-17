@@ -40,3 +40,20 @@ def get_configuration_name(url: str) -> ConfName:
         if matches_pattern(key, url):
             return value
     return ConfName.UNKNOWN
+
+def display_dict(data: dict) -> dict:
+    """
+    transformes all dictionary values to strings and slices them to 100 characters, used for displaying purposes
+
+    Args:
+        data (dict): input dictionary
+
+    Returns:
+        dict: transformed dictionary or input data if its format is not a dict
+    """
+    if isinstance(data, dict):
+        truncated_data = {key: (str(value)[:100] + "..." if len(str(value)) > 100 else str(value)) for key, value in data.items()}
+        return truncated_data
+    return data
+
+        
