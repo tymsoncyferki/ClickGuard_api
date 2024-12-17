@@ -5,6 +5,7 @@ from flask_cors import CORS
 from .postdetection import handle_predict, handle_extract, handle_extract_and_predict
 from .predetection import handle_predetection
 from .dtos import Article, HTMLPayload
+from .utils import display_dict
 
 app = Flask(__name__)
 CORS(app)
@@ -19,7 +20,7 @@ def extract():
         return '', 204
     try:
         data = request.get_json()
-        app.logger.info(f"Received request for /extract endpoint with payload {data}")
+        app.logger.info(f"Received request for /extract endpoint with payload {display_dict(data)}")
         html_payload = HTMLPayload(**data)
         article = handle_extract(html_payload)
         return jsonify(article.model_dump())
@@ -32,7 +33,7 @@ def predict():
         return '', 204  # Return 204 No Content for OPTIONS requests
     try:
         data = request.get_json()
-        app.logger.info(f"Received request for /predict endpoint with payload {data}")
+        app.logger.info(f"Received request for /predict endpoint with payload {display_dict(data)}")
         article = Article(**data)
         prediction = handle_predict(article)
         return jsonify(prediction.model_dump())
@@ -45,7 +46,7 @@ def extract_and_predict():
         return '', 204
     try:
         data = request.get_json()
-        app.logger.info(f"Received request for /extract_and_predict endpoint with payload {data}")
+        app.logger.info(f"Received request for /extract_and_predict endpoint with payload {display_dict(data)}")
         html_payload = HTMLPayload(**data)
         try:
             generate_spoiler = data["generateSpoiler"]
@@ -62,7 +63,7 @@ async def detect():
         return '', 204
     try:
         data = request.get_json()
-        app.logger.info(f"Received request for /predetect endpoint with payload {data}")
+        app.logger.info(f"Received request for /predetect endpoint with payload {display_dict(data)}")
         html_payload = HTMLPayload(**data)
         prediction = await handle_predetection(html_payload)
         return jsonify(prediction.model_dump())
