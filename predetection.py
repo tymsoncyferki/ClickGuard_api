@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from dtos import HTMLPayload, DetectionResponse, ConfName
 from utils import get_configuration_name
 from prediction_async import predict_titles_async
+from config import logger
 
 async def handle_google_detection(html_content: str) -> DetectionResponse:
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -16,12 +17,17 @@ async def handle_google_detection(html_content: str) -> DetectionResponse:
                 link = anchor.get('href')
                 titles[link] = title
     predictions = await predict_titles_async(titles)
+    logger.info(f"google pre-click predictions: {len(predictions.keys())}")
     return DetectionResponse(predictions=predictions)
 
 async def handle_thesun_detection(html_content: str) -> DetectionResponse:
     soup = BeautifulSoup(html_content, 'html.parser')
     titles = {}
-    for result in soup.find_all('div', {'class': 'sun-grid-container'}):
+    containers = []
+    class_names = ['sun-grid-container', 'grids-container', 'content-container']
+    for name in class_names:
+        containers.extend(soup.find_all('div', {'class': name}))
+    for result in containers:
         anchors = result.find_all('a')
         for anchor in anchors:
             if anchor.has_attr('data-headline'):
@@ -31,6 +37,7 @@ async def handle_thesun_detection(html_content: str) -> DetectionResponse:
                     titles[link] = title
     # predictions = titles_predict(titles)
     predictions = await predict_titles_async(titles)
+    logger.info(f"the sun pre-click predictions: {len(predictions.keys())}")
     return DetectionResponse(predictions=predictions)
 
 async def handle_predetection(payload: HTMLPayload) -> DetectionResponse:

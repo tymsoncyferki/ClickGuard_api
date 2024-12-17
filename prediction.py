@@ -2,10 +2,10 @@ from typing import Any
 
 from openai import OpenAI
 
-from config import Config, MODEL
+from config import Config, MODEL, logger
 from measure import calculate_metrics
 
-def send_request(prompt: str) -> dict:
+def send_request(prompt: str):
     """
     sends request to OpenAI embeddings endpoint
 
@@ -39,10 +39,12 @@ def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
         try:
             res = send_request(prompt)
             returned_data = res.data
+            logger.info("Request to OpenAI was successfull")
             return returned_data[0].embedding
         except Exception as e:
             if attempt == max_retries - 1:
-                raise ValueError(f"There is a problem with a request to OpenAI: {e}, {res}")
+                logger.error(f"There is a problem with a request to OpenAI: {e}, {res}, aborting prediction")
+                raise ValueError(f"There is a problem with connection to OpenAi Embeddings API")
             attempt += 1
     return []
 

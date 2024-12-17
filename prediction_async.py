@@ -53,8 +53,6 @@ async def get_embeddings(titles: list[str]) -> list:
         tasks = [fetch_embedding(session, title) for title in titles]
         embeddings = await asyncio.gather(*tasks)
         return embeddings
-    
-import time
 
 async def predict_titles_async(titles_dict: dict) -> dict:
     """
