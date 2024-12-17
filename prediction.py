@@ -39,7 +39,7 @@ def return_embeddings_chat(prompt: str, max_retries: int = 2) -> list:
         try:
             res = send_request(prompt)
             returned_data = res.data
-            logger.info("Request to OpenAI was successfull")
+            logger.info("Request to OpenAI Embeddings API was successfull")
             return returned_data[0].embedding
         except Exception as e:
             if attempt == max_retries - 1:

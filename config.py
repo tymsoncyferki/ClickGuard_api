@@ -12,9 +12,18 @@ load_dotenv()
 
 # config
 class Config:
+    # open ai api key
     OPEN_API_KEY = os.getenv("OPEN_API_KEY")
+    # path to the model used
     MODEL_PATH = os.path.join(os.getcwd(), "models/XGB_1000_dimensions_and_informativeness_measures.pkl")
+    # dir path to nltk data
     NLTK_DATA_DIR = "nltk_data/"
+    # if api access is restricted
+    RESTRICTED = os.getenv("RESTRICTED")
+    # extension id 
+    EXTENSION_ID = os.getenv("EXTENSION_ID")
+    # token for api access
+    SPECIAL_TOKEN = os.getenv("SPECIAL_TOKEN")
 
 # pre-click config mapper
 CONF_MAPPER = {
