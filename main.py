@@ -84,7 +84,8 @@ async def detect():
 def validate_access(request):
     """ validates access based on the origin header and a special token """
     origin = request.headers.get("Origin", "")
-    if origin == f"chrome-extension://{Config.EXTENSION_ID}":
+    # if origin == f"chrome-extension://{Config.EXTENSION_ID}":
+    if origin.startswith("chrome-extension://"):
         return True
     token = request.get_json().get("token")
     if token == Config.SPECIAL_TOKEN:
