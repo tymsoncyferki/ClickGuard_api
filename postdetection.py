@@ -5,6 +5,7 @@ from dtos import HTMLPayload, Article, PredictionResponse
 from measure import explain_baitness, calculate_metrics
 from prediction import get_probability_of_clickbait_title
 from spoiling import get_spoiler
+from config import logger
 
 # extraction 
 
@@ -38,6 +39,7 @@ def extract_title(html_content: str) -> str:
     title = ''
     if h1_tag:
         title = h1_tag.get_text()
+    logger.info(f"Extracted title: {title}")
     return title
 
 def predict(title: str, content: str, metrics_dict: dict = None) -> float:

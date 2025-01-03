@@ -17,7 +17,7 @@ def send_request(prompt: str):
     """
     client = OpenAI(api_key=Config.OPEN_API_KEY)
     res = client.embeddings.create(
-        input="prompt",
+        input=prompt,
         model="text-embedding-3-large",
         dimensions=1000
     )
