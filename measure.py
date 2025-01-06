@@ -322,7 +322,7 @@ def explain_baitness(text, probability, metrics_dict = None):
         "2nd person pronouns": "uses second person pronouns",
         "capital words": "uses many capital letters",
         "numbers": "uses numbers to draw attention",
-        "punctuation": "uses excessive punctuation",
+        "punctuation": "uses clickbait-specific punctuation",
         "bait words": "includes clickbait-specific words",
         "superlatives": "uses superlative words",
         "speculatives": "uses speculative words",
