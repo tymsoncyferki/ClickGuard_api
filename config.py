@@ -19,7 +19,7 @@ class Config:
     # dir path to nltk data
     NLTK_DATA_DIR = "nltk_data/"
     # if api access is restricted
-    RESTRICTED = os.getenv("RESTRICTED")
+    RESTRICTED = bool(os.getenv("RESTRICTED"))
     # extension id 
     EXTENSION_ID = os.getenv("EXTENSION_ID")
     # token for api access

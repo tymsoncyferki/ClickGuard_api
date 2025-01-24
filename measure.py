@@ -14,6 +14,7 @@ BAIT_PHRASES = [
  'anyone',
  'know',
  'af',
+ 'omg',
  'movies',
  'amazing',
  'totally',
